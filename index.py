@@ -21,7 +21,7 @@ responseFileCreate = client.files.create(
   purpose="fine-tune"
 )
 # Imprimimos la respuesta de la creación del archivo
-print(f"responseFileCreate: {responseFileCreate}")
+print(f"responseFileCreate: {json.dumps(responseFileCreate.to_dict(), indent=2)}")
 
 # Creamos un trabajo de fine-tuning utilizando el archivo creado anteriormente y un modelo específico
 responseJobCreate = client.fine_tuning.jobs.create(
@@ -29,19 +29,16 @@ responseJobCreate = client.fine_tuning.jobs.create(
   model = "gpt-3.5-turbo"
 )
 # Imprimimos la respuesta de la creación del trabajo de fine-tuning
-print(f"responseJobCreate: {responseJobCreate}")
+print(f"responseJobCreate: {json.dumps(responseJobCreate.to_dict(), indent=2)}")
 
 # Listamos los últimos 10 trabajos de fine-tuning
 responseFineTuningJobs = client.fine_tuning.jobs.list(limit=10)
 # Imprimimos la lista de trabajos de fine-tuning
-print(f"responseFineTuningJobs: {responseFineTuningJobs}")
-# Iteramos sobre cada trabajo de fine-tuning y lo imprimimos
-for FineTuningJob in responseFineTuningJobs.data:
-  print(f"FineTuningJob: {FineTuningJob}")
+print(f"responseFineTuningJobs: {json.dumps(responseFineTuningJobs.to_dict(), indent=2)}")
 
-# Creamos una solicitud de completado de chat utilizando un modelo fine-tuned
+# Creamos una solicitud de completado de chat utilizando el modelo fine-tuned
 responseChatCompletion = client.chat.completions.create(
-  model="ft:gpt-3.5-turbo-0125:personal::A4xgRpak",
+  model=responseFineTuningJobs.data[0].fine_tuned_model,
   messages=[
     {"role": "system", "content": "You are a teaching assistant for Machine Learning. You should help to user to answer on his question."},
     {"role": "user", "content": "What is a loss function?"}
